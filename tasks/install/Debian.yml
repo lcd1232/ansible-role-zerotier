@@ -43,6 +43,6 @@
 
 - name: Add ZeroTier APT repository
   apt_repository:
-    repo: deb {{ zerotier_download_base_url }}/debian/{{ zerotier_deb_release_repo }} {{ zerotier_deb_release_repo }} main
+    repo: "deb [signed-by={{ zerotier_keyring_path }}] {{ zerotier_download_base_url }}/debian/{{ zerotier_deb_release_repo }} {{ zerotier_deb_release_repo }} main"
     filename: zerotier
   register: zerotier_repo
