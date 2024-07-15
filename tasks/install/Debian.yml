@@ -1,7 +1,17 @@
-- name: Add ZeroTier PGP key
-  apt_key:
-    url: "{{ zerotier_gpg_url }}"
-    id: "{{ zerotier_gpg_fingerprint }}"
+- name: Download ZeroTier PGP key
+  get_url:
+    url: "{{ zerotier_pgp_url }}"
+    dest: "{{ zerotier_apt_key_path }}"
+
+- name: Import ZeroTier GPG key
+  command: "gpg --no-default-keyring --keyring gnupg-ring:{{ zerotier_keyring_path }} --import {{ zerotier_apt_key_path }}"
+  args:
+    creates: "{{ zerotier_keyring_path }}"
+
+- name: Set permissions for ZeroTier GPG key
+  file:
+    path: "{{ zerotier_keyring_path }}"
+    mode: '0644'
 
 - name: Check if Ubuntu release has dedicated repo
   uri:
