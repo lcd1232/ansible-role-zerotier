@@ -2,7 +2,7 @@
 - block:
   - name: Authorize new members to network
     uri:
-      url: "{{ zerotier_api_url }}/api/network/{{ zerotier_network_id }}/member/{{ ansible_local['zerotier']['node_id'] }}"
+      url: "{{ zerotier_api_url }}/api/network/{{ zerotier_network_id }}/member/{{ ansible_facts['local']['zerotier']['node_id'] }}"
       method: POST
       headers:
         Authorization: bearer {{ zerotier_api_accesstoken }}
@@ -14,12 +14,12 @@
     register: auth_apiresult
     delegate_to: "{{ zerotier_api_delegate }}"
     when:
-    - ansible_local['zerotier']['networks'][zerotier_network_id] is not defined or
-      ansible_local['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
+    - ansible_facts['local']['zerotier']['networks'][zerotier_network_id] is not defined or
+      ansible_facts['local']['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
 
   - name: Configure members in network
     uri:
-      url: "{{ zerotier_api_url }}/api/network/{{ zerotier_network_id }}/member/{{ ansible_local['zerotier']['node_id'] }}"
+      url: "{{ zerotier_api_url }}/api/network/{{ zerotier_network_id }}/member/{{ ansible_facts['local']['zerotier']['node_id'] }}"
       method: POST
       headers:
         Authorization: bearer {{ zerotier_api_accesstoken }}
@@ -42,7 +42,7 @@
 - block:
   - name: Authorize new members to network (ZTNET)
     uri:
-      url: "{{ zerotier_api_url }}/api/v1/network/{{ zerotier_network_id }}/member/{{ ansible_local['zerotier']['node_id'] }}/"
+      url: "{{ zerotier_api_url }}/api/v1/network/{{ zerotier_network_id }}/member/{{ ansible_facts['local']['zerotier']['node_id'] }}/"
       method: POST
       headers:
         x-ztnet-auth: "{{ zerotier_api_accesstoken }}"
@@ -53,8 +53,8 @@
     register: auth_apiresult
     delegate_to: "{{ zerotier_api_delegate }}"
     when:
-    - ansible_local['zerotier']['networks'][zerotier_network_id] is not defined or
-      ansible_local['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
+    - ansible_facts['local']['zerotier']['networks'][zerotier_network_id] is not defined or
+      ansible_facts['local']['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
 
   # ztnet doesn't support specifying ip
 
@@ -69,7 +69,7 @@
 - block:
   - name: Authorize new members to network (ZTNET Organization)
     uri:
-      url: "{{ zerotier_api_url }}/api/v1/org/{{ zerotier_ztnet_org_id }}/network/{{ zerotier_network_id }}/member/{{ ansible_local['zerotier']['node_id'] }}/"
+      url: "{{ zerotier_api_url }}/api/v1/org/{{ zerotier_ztnet_org_id }}/network/{{ zerotier_network_id }}/member/{{ ansible_facts['local']['zerotier']['node_id'] }}/"
       method: POST
       headers:
         x-ztnet-auth: "{{ zerotier_api_accesstoken }}"
@@ -80,8 +80,8 @@
     register: auth_apiresult
     delegate_to: "{{ zerotier_api_delegate }}"
     when:
-    - ansible_local['zerotier']['networks'][zerotier_network_id] is not defined or
-      ansible_local['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
+    - ansible_facts['local']['zerotier']['networks'][zerotier_network_id] is not defined or
+      ansible_facts['local']['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
 
   # ztnet doesn't support specifying ip
 
