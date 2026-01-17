@@ -40,7 +40,8 @@ jobs:
 
       - name: Notify Ansible Galaxy
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        continue-on-error: true
         run: |
           curl -X POST https://galaxy.ansible.com/api/v1/notifications/ \
             -H "Content-Type: application/json" \
-            -d "{\"github_repository\": \"${{ github.repository }}\", \"github_branch\": \"${{ github.ref }}\"}"
+            -d "{\"github_repository\": \"${{ github.repository }}\", \"github_branch\": \"${{ github.ref_name }}\"}"
