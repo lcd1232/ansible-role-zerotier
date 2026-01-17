@@ -40,7 +40,7 @@
   become: false
 
 - block:
-  - name: Authorize new members to network
+  - name: Authorize new members to network (ZTNET)
     uri:
       url: "{{ zerotier_api_url }}/api/v1/network/{{ zerotier_network_id }}/member/{{ ansible_local['zerotier']['node_id'] }}/"
       method: POST
@@ -67,7 +67,7 @@
   become: false
 
 - block:
-  - name: Authorize new members to network
+  - name: Authorize new members to network (ZTNET Organization)
     uri:
       url: "{{ zerotier_api_url }}/api/v1/org/{{ zerotier_ztnet_org_id }}/network/{{ zerotier_network_id }}/member/{{ ansible_local['zerotier']['node_id'] }}/"
       method: POST
