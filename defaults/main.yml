@@ -2,6 +2,8 @@
 # defaults file for ansible-role-zerotier
 zerotier_api_accesstoken: "{{ zerotier_accesstoken | default() }}" # For backwards compatibility
 zerotier_api_url: https://my.zerotier.com
+zerotier_api_panel: zerotier # Possible values: zerotier, ztnet
+zerotier_ztnet_org_id: "" # If you've created an API key for organization
 zerotier_api_delegate: localhost
 zerotier_apt_key_path: /tmp/ZEROTIER-GPG-KEY
 zerotier_keyring_path: '/usr/share/keyrings/zerotier.gpg'

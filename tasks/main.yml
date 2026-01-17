@@ -6,7 +6,7 @@
 
 - block:
   - name: Update ansible_local facts
-    script: set_facts.sh
+    script: set_facts.py
 
   - name: Re-gather ansible_local facts
     setup: filter=ansible_local
