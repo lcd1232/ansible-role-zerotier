@@ -12,6 +12,7 @@ Technically this role has no requirements. If it's ran without any variables set
 
 [**zerotier_network_id**](#zerotier_network_id): when set hosts are told to join this network.  
 [**zerotier_api_accesstoken**](#zerotier_api_accesstoken): when set the role can handle member authentication and configuration using the ZeroTier API.  
+[**zerotier_api_panel**](#zerotier_api_panel): controls which API panel to use (ZeroTier Central or ZTNET self-hosted controller).  
 
 Role Variables
 --------------
@@ -46,6 +47,21 @@ Role Variables
 *Default value*: `https://my.zerotier.com`  
 *Description*: The url where the Zerotier API lives. Must use HTTPS protocol.  
 
+### zerotier_api_panel
+*Type*: string  
+*Default value*: `zerotier`  
+*Description*: The API panel type to use. Possible values are `zerotier` (official ZeroTier Central) or `ztnet` (self-hosted ZTNET controller).
+
+### zerotier_ztnet_org_id
+*Type*: string  
+*Default value*: `""`  
+*Description*: The organization ID when using ZTNET with an organization-scoped API key. Only required when `zerotier_api_panel` is set to `ztnet` and you're using an organization API key.
+
+### zerotier_authorize_member
+*Type*: boolean  
+*Default value*: `true`  
+*Description*: Whether to automatically authorize the member in the network. Set to `false` if you want to manually authorize members.
+
 ### zerotier_api_delegate
 *Type*: string  
 *Default value*: `localhost`  
@@ -54,11 +70,44 @@ Role Variables
 Example Playbook
 ----------------
 
+### Using ZeroTier Central (Official)
+
 ```yaml
     - hosts: servers
       vars:
          zerotier_network_id: 1234567890qwerty
          zerotier_api_accesstoken: "{{ vault_zerotier_accesstoken }}"
+         zerotier_register_short_hostname: true
+
+      roles:
+         - { role: m4rcu5nl.zerotier, become: true }
+```
+
+### Using ZTNET (Self-hosted Controller)
+
+```yaml
+    - hosts: servers
+      vars:
+         zerotier_network_id: 1234567890qwerty
+         zerotier_api_accesstoken: "{{ vault_zerotier_accesstoken }}"
+         zerotier_api_url: https://ztnet.example.com
+         zerotier_api_panel: ztnet
+         zerotier_register_short_hostname: true
+
+      roles:
+         - { role: m4rcu5nl.zerotier, become: true }
+```
+
+### Using ZTNET with Organization API Key
+
+```yaml
+    - hosts: servers
+      vars:
+         zerotier_network_id: 1234567890qwerty
+         zerotier_api_accesstoken: "{{ vault_zerotier_accesstoken }}"
+         zerotier_api_url: https://ztnet.example.com
+         zerotier_api_panel: ztnet
+         zerotier_ztnet_org_id: "your-org-id"
          zerotier_register_short_hostname: true
 
       roles:
