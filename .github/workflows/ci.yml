@@ -1,0 +1,46 @@
+---
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Ansible
+        run: |
+          pip install ansible
+
+      - name: Check Ansible version
+        run: |
+          ansible --version
+
+      - name: Create ansible.cfg with correct roles_path
+        run: |
+          printf '[defaults]\nroles_path=../' >ansible.cfg
+
+      - name: Basic role syntax check
+        run: |
+          ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+
+      - name: Notify Ansible Galaxy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          curl -X POST https://galaxy.ansible.com/api/v1/notifications/ \
+            -H "Content-Type: application/json" \
+            -d "{\"github_repository\": \"${{ github.repository }}\", \"github_branch\": \"${{ github.ref }}\"}"
