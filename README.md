@@ -107,7 +107,7 @@ Example Playbook
          zerotier_api_accesstoken: "{{ vault_zerotier_accesstoken }}"
          zerotier_api_url: https://ztnet.example.com
          zerotier_api_panel: ztnet
-         zerotier_ztnet_org_id: "your-org-id"
+         zerotier_ztnet_org_id: "your-org-id"  # Found in ZTNET organization settings
          zerotier_register_short_hostname: true
 
       roles:
