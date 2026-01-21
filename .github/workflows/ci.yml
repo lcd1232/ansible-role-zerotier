@@ -9,10 +9,6 @@ name: CI
   schedule:
     - cron: "0 4 * * 1"
 
-defaults:
-  run:
-    working-directory: 'lcd1232.zerotier-one'
-
 permissions:
   contents: read
 
@@ -26,8 +22,6 @@ jobs:
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v4
-        with:
-          path: 'lcd1232.zerotier-one'
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -41,40 +35,6 @@ jobs:
         run: |
           yamllint .
 
-  molecule:
-    name: Molecule
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    strategy:
-      matrix:
-        distro:
-          - ubuntu2204
-          - ubuntu2004
-          - debian12
-          - debian11
-
-    steps:
-      - name: Check out the codebase
-        uses: actions/checkout@v4
-        with:
-          path: 'lcd1232.zerotier-one'
-
-      - name: Set up Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install test dependencies
-        run: pip3 install ansible molecule molecule-plugins[docker] docker
-
-      - name: Run Molecule tests
-        run: molecule test
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          MOLECULE_DISTRO: ${{ matrix.distro }}
-
   test:
     name: Test Ansible Local Facts
     runs-on: ubuntu-latest
@@ -83,8 +43,6 @@ jobs:
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v4
-        with:
-          path: 'lcd1232.zerotier-one'
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -94,6 +52,9 @@ jobs:
       - name: Install Ansible
         run: pip3 install ansible
 
+      - name: Display Ansible version
+        run: ansible --version
+
       - name: Run standalone test playbook
         run: |
           ansible-playbook molecule/default/test-playbook.yml
@@ -101,4 +62,4 @@ jobs:
       - name: Run syntax check
         run: |
           cd ../
-          ansible-playbook lcd1232.zerotier-one/tests/test.yml -i lcd1232.zerotier-one/tests/inventory --syntax-check
+          ansible-playbook ansible-role-zerotier/tests/test.yml -i ansible-role-zerotier/tests/inventory --syntax-check
