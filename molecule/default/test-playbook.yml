@@ -39,4 +39,3 @@
           - ansible_local['zerotier']['node_id'] is defined
         success_msg: "Condition check passed - the fix is working!"
         fail_msg: "Condition check failed - ansible_local not accessible"
-
