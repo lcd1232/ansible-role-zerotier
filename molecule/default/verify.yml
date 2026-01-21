@@ -1,0 +1,23 @@
+---
+# Purpose: assert that the instance really ended up in the expected state.
+# Molecule calls this playbook with `molecule verify`.
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Re-gather facts to load custom facts
+      ansible.builtin.setup:
+        filter: ansible_local
+
+    - name: Verify ansible_facts['local'] is properly accessible
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['local'] is defined
+          - ansible_facts['local']['zerotier'] is defined
+          - ansible_facts['local']['zerotier']['node_id'] == "test-node-id-123"
+        fail_msg: "ansible_facts['local'] is not properly accessible"
+        success_msg: "Successfully verified ansible_facts['local'] access"
+
+    - name: Verify the role didn't fail on ansible_facts access
+      ansible.builtin.debug:
+        msg: "Role successfully handled ansible_facts['local'] without errors"

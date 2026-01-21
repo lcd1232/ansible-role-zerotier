@@ -1,0 +1,51 @@
+---
+# Purpose: bring the instance to the desired state by running the role under test.
+# Molecule calls this playbook with `molecule converge`.
+- name: Converge
+  hosts: all
+  gather_facts: true
+  vars:
+    skip_install: true  # Skip installation to test the facts logic
+    zerotier_network_id: "test-network-id"
+    zerotier_api_accesstoken: ""  # Empty to skip authorization
+  tasks:
+    - name: Create mock ansible facts directory
+      ansible.builtin.file:
+        path: /etc/ansible/facts.d
+        state: directory
+        mode: '0755'
+      become: true
+
+    - name: Create mock zerotier.fact file
+      ansible.builtin.copy:
+        content: |
+          {
+            "node_id": "test-node-id-123",
+            "networks": {
+              "test-network-id": {
+                "status": "OK",
+                "device": "zt0"
+              }
+            }
+          }
+        dest: /etc/ansible/facts.d/zerotier.fact
+        mode: '0644'
+      become: true
+
+    - name: Re-gather facts to load custom facts
+      ansible.builtin.setup:
+        filter: ansible_local
+
+    - name: Test that ansible_facts['local'] is accessible
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['local'] is defined
+          - ansible_facts['local']['zerotier'] is defined
+          - ansible_facts['local']['zerotier']['node_id'] is defined
+          - ansible_facts['local']['zerotier']['node_id'] == "test-node-id-123"
+        fail_msg: "ansible_facts['local'] structure is not properly accessible"
+        success_msg: "ansible_facts['local'] is properly accessible"
+
+    - name: Apply role under test
+      ansible.builtin.include_role:
+        name: ansible-role-zerotier
