@@ -9,15 +9,15 @@
       ansible.builtin.setup:
         filter: ansible_local
 
-    - name: Verify ansible_facts['local'] is properly accessible
+    - name: Verify ansible_local is properly accessible
       ansible.builtin.assert:
         that:
-          - ansible_facts['local'] is defined
-          - ansible_facts['local']['zerotier'] is defined
-          - ansible_facts['local']['zerotier']['node_id'] == "test-node-id-123"
-        fail_msg: "ansible_facts['local'] is not properly accessible"
-        success_msg: "Successfully verified ansible_facts['local'] access"
+          - ansible_local is defined
+          - ansible_local['zerotier'] is defined
+          - ansible_local['zerotier']['node_id'] == "test-node-id-123"
+        fail_msg: "ansible_local is not properly accessible"
+        success_msg: "Successfully verified ansible_local access"
 
-    - name: Verify the role didn't fail on ansible_facts access
+    - name: Verify the role didn't fail on ansible_local access
       ansible.builtin.debug:
-        msg: "Role successfully handled ansible_facts['local'] without errors"
+        msg: "Role successfully handled ansible_local without errors"
