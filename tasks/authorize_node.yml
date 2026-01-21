@@ -50,8 +50,12 @@
         name: "{{ zerotier_member_register_short_hostname | ternary(inventory_hostname_short, inventory_hostname) }}"
         authorized: "{{ zerotier_authorize_member }}"
       body_format: json
+      status_code: [200, 201]
     register: auth_apiresult
     delegate_to: "{{ zerotier_api_delegate }}"
+    retries: 5
+    delay: 3
+    until: auth_apiresult is success
     when:
     - ansible_local['zerotier']['networks'][zerotier_network_id] is not defined or
       ansible_local['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
@@ -77,8 +81,12 @@
         name: "{{ zerotier_member_register_short_hostname | ternary(inventory_hostname_short, inventory_hostname) }}"
         authorized: "{{ zerotier_authorize_member }}"
       body_format: json
+      status_code: [200, 201]
     register: auth_apiresult
     delegate_to: "{{ zerotier_api_delegate }}"
+    retries: 5
+    delay: 3
+    until: auth_apiresult is success
     when:
     - ansible_local['zerotier']['networks'][zerotier_network_id] is not defined or
       ansible_local['zerotier']['networks'][zerotier_network_id]['status'] != 'OK'
