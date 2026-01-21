@@ -1,0 +1,65 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  schedule:
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies
+        run: pip3 install yamllint
+
+      - name: Lint code
+        run: |
+          yamllint .
+
+  test:
+    name: Test Ansible Local Facts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Ansible
+        run: pip3 install ansible
+
+      - name: Display Ansible version
+        run: ansible --version
+
+      - name: Run standalone test playbook
+        run: |
+          ansible-playbook molecule/default/test-playbook.yml
+
+      - name: Run syntax check
+        run: |
+          cd ../
+          ansible-playbook ansible-role-zerotier/tests/test.yml -i ansible-role-zerotier/tests/inventory --syntax-check

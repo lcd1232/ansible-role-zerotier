@@ -1,0 +1,41 @@
+---
+# Simple test playbook to verify ansible_local syntax
+- name: Test ansible_local access
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    skip_install: true
+    zerotier_network_id: "test-network-id"
+    zerotier_api_accesstoken: "test-token"  # Set token to test authorization path
+  tasks:
+    - name: Set custom facts to simulate zerotier facts
+      ansible.builtin.set_fact:
+        ansible_local:
+          zerotier:
+            node_id: "test-node-id-123"
+            networks:
+              test-network-id:
+                status: "OK"
+                device: "zt0"
+
+    - name: Test that ansible_local is accessible
+      ansible.builtin.assert:
+        that:
+          - ansible_local is defined
+          - ansible_local['zerotier'] is defined
+          - ansible_local['zerotier']['node_id'] is defined
+          - ansible_local['zerotier']['node_id'] == "test-node-id-123"
+        fail_msg: "ansible_local structure is not properly accessible"
+        success_msg: "ansible_local is properly accessible"
+
+    - name: Test the condition that was failing
+      ansible.builtin.debug:
+        msg: "Testing: ansible_local['zerotier']['node_id'] is defined = {{ ansible_local['zerotier']['node_id'] is defined }}"
+
+    - name: Verify the condition evaluates correctly
+      ansible.builtin.assert:
+        that:
+          - ansible_local['zerotier']['node_id'] is defined
+        success_msg: "Condition check passed - the fix is working!"
+        fail_msg: "Condition check failed - ansible_local not accessible"
