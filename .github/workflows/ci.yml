@@ -54,8 +54,8 @@ jobs:
         run: ansible --version
 
       - name: Test role syntax.
+        working-directory: ansible-role-zerotier
         run: |
-          cd ansible-role-zerotier
           printf '[defaults]\nroles_path=../' >ansible.cfg
           ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
