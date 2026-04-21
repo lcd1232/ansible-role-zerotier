@@ -1,0 +1,68 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 5 * * 4"
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+        with:
+          path: 'ansible-role-zerotier'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install ansible
+
+      - name: Check Ansible version.
+        run: ansible --version
+
+      - name: Test role syntax.
+        working-directory: ansible-role-zerotier
+        run: |
+          printf '[defaults]\nroles_path=../' >ansible.cfg
+          ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+
+      - name: Notify Ansible Galaxy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        continue-on-error: true
+        run: |
+          curl -X POST https://galaxy.ansible.com/api/v1/notifications/ \
+            -H "Content-Type: application/json" \
+            -d "{\"github_repository\": \"${{ github.repository }}\", \"github_branch\": \"${{ github.ref_name }}\"}"

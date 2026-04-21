@@ -1,0 +1,19 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 200
+    level: warning
+  indentation:
+    level: warning
+  trailing-spaces:
+    level: warning
+  truthy:
+    level: warning
+  comments:
+    level: warning
+  document-start:
+    level: warning
+  new-line-at-end-of-file:
+    level: warning
