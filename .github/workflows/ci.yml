@@ -1,44 +1,65 @@
 ---
 name: CI
-
-on:
+'on':
+  pull_request:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
+  schedule:
+    - cron: "0 5 * * 4"
+
+defaults:
+  run:
+    working-directory: 'lcd1232.zerotier'
 
 jobs:
-  test:
+
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
-      - name: Checkout code
+      - name: Check out the codebase.
         uses: actions/checkout@v4
+        with:
+          path: 'lcd1232.zerotier'
 
-      - name: Set up Python
+      - name: Set up Python 3.
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
-      - name: Install Ansible
-        run: |
-          pip install ansible
+      - name: Install test dependencies.
+        run: pip3 install yamllint
 
-      - name: Check Ansible version
+      - name: Lint code.
         run: |
-          ansible --version
+          yamllint .
 
-      - name: Create ansible.cfg with correct roles_path
-        run: |
-          printf '[defaults]\nroles_path=../' >ansible.cfg
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+        with:
+          path: 'lcd1232.zerotier'
 
-      - name: Basic role syntax check
-        run: |
-          ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+      - name: Set up Python 3.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install ansible
+
+      - name: Check Ansible version.
+        run: ansible --version
+
+      - name: Create ansible.cfg with correct roles_path.
+        run: printf '[defaults]\nroles_path=../' >ansible.cfg
+
+      - name: Test role syntax.
+        run: ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
       - name: Notify Ansible Galaxy
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
